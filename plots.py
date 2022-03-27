@@ -9,7 +9,7 @@ from typing import MutableSequence
 from plotly import express as px
 import streamlit as st
 import time
-from typing import Dict
+from typing import Dict, Optional
 
 print(f"System Memory used: {psutil.virtual_memory().used // (1024 ** 3)} GB")
 print(f"System Memory available: {psutil.virtual_memory().available // (1024 ** 3)} GB")
@@ -22,10 +22,10 @@ partitions = psutil.disk_partitions()
 
 # data = defaultdict(defaultdict(defaultdict(defaultdict(list))))
 
-used_memory: Dict[float, MutableSequence[float]] = defaultdict(deque)
-free_memory: Dict[float, MutableSequence[float]] = defaultdict(deque)
-total_memory: Dict[float, MutableSequence[float]] = defaultdict(deque)
-data: Dict[float, MutableSequence[float]] = defaultdict(list)
+used_memory: Dict[float, MutableSequence[Optional[float]]] = defaultdict(deque)
+free_memory: Dict[float, MutableSequence[Optional[float]]] = defaultdict(deque)
+total_memory: Dict[float, MutableSequence[Optional[float]]] = defaultdict(deque)
+data: Dict[float, MutableSequence[Optional[float]]] = defaultdict(list)
 
 arr_size = 30
 
