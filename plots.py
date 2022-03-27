@@ -60,7 +60,6 @@ def refresh_data():
 
 def cpu_chart():
     global data
-    global fig
     fig = go.Figure(
         go.Indicator(
             mode="gauge+number+delta",
@@ -93,7 +92,11 @@ if __name__ == "__main__":
         refresh_data()
         time.sleep(0.5)
         stats.plotly_chart(
-            px.line(data, x="time", y=["used_memory", "free_memory", "total_memory"]),
-            title=f"Memory usage on {hostname}",
+            px.line(
+                data,
+                x="time",
+                y=["used_memory", "free_memory", "total_memory"],
+                title=f"Memory usage on {hostname}",
+            ),
         )
         cpu.plotly_chart(cpu_chart())
