@@ -25,7 +25,7 @@ partitions = psutil.disk_partitions()
 used_memory: Dict[float, MutableSequence[Optional[float]]] = defaultdict(deque)
 free_memory: Dict[float, MutableSequence[Optional[float]]] = defaultdict(deque)
 total_memory: Dict[float, MutableSequence[Optional[float]]] = defaultdict(deque)
-data: Dict[str, MutableSequence[Optional[float]]] = defaultdict(list)
+data: Dict[str, MutableSequence[Optional[float]]] = defaultdict(deque)
 
 arr_size = 30
 
@@ -44,7 +44,7 @@ def refresh_data():
     #         continue
     memory = psutil.virtual_memory()
 
-    data["time"].appendleft(time.time())
+    data["time"].appendleft(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
     data["used_memory"].appendleft(memory.used // (1024**3))
     data["free_memory"].appendleft(memory.free // (1024**3))
     data["total_memory"].appendleft(memory.total // (1024**3))
