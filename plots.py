@@ -25,7 +25,7 @@ partitions = psutil.disk_partitions()
 used_memory: Dict[float, MutableSequence[Optional[float]]] = defaultdict(deque)
 free_memory: Dict[float, MutableSequence[Optional[float]]] = defaultdict(deque)
 total_memory: Dict[float, MutableSequence[Optional[float]]] = defaultdict(deque)
-data: Dict[float, MutableSequence[Optional[float]]] = defaultdict(list)
+data: Dict[str, MutableSequence[Optional[float]]] = defaultdict(list)
 
 arr_size = 30
 
