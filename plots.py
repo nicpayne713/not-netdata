@@ -45,21 +45,48 @@ def refresh_data():
     #         continue
     memory = psutil.virtual_memory()
 
-    data["time"].appendleft(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
-    data["used_memory"].appendleft(memory.used // (1024**3))
-    data["free_memory"].appendleft(memory.free // (1024**3))
-    data["total_memory"].appendleft(memory.total // (1024**3))
-    data["cpu_usage"].appendleft(psutil.cpu_percent())
+    data["time"].append(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
+    data["used_memory"].append(memory.used // (1024**3))
+    data["free_memory"].append(memory.free // (1024**3))
+    data["total_memory"].append(memory.total // (1024**3))
+    data["cpu_usage"].append(psutil.cpu_percent())
 
-    data["time"].pop()
-    data["used_memory"].pop()
-    data["free_memory"].pop()
-    data["total_memory"].pop()
-    data["cpu_usage"].pop()
+    data["time"].popleft()
+    data["used_memory"].popleft()
+    data["free_memory"].popleft()
+    data["total_memory"].popleft()
+    data["cpu_usage"].popleft()
+
+
+def cpu_chart():
+    global data
+    global fig
+    fig = go.Figure(
+        go.Indicator(
+            mode="gauge+number+delta",
+            value=data["cpu_usage"][-1],
+            domain={"x": [0, 1], "y": [0, 1]},
+            title={"text": "CPU %"},
+            delta={"reference": data["cpu_usage"][-2]},
+            gauge={
+                "axis": {"range": [0, 100]},
+                "steps": [
+                    {"range": [0, 50], "color": "lightgray"},
+                    {"range": [50, 90], "color": "gray"},
+                    {"range": [90, 100], "color": "red"},
+                ],
+                "threshold": {
+                    "line": {"color": "red", "width": 4},
+                    "thickness": 0.75,
+                    "value": 95,
+                },
+            },
+        )
+    )
+    return fig
 
 
 if __name__ == "__main__":
-
     stats = st.empty()
     cpu = st.empty()
     while True:
@@ -69,26 +96,4 @@ if __name__ == "__main__":
             px.line(data, x="time", y=["used_memory", "free_memory", "total_memory"]),
             title=f"Memory usage on {hostname}",
         )
-        fig = go.Figure(
-            go.Indicator(
-                mode="gauge+number+delta",
-                value=data["cpu_usage"][-1],
-                domain={"x": [0, 1], "y": [0, 1]},
-                title={"text": "CPU %"},
-                delta={"reference": data["cpu_usage"][-2]},
-                gauge={
-                    "axis": {"range": [0, 100]},
-                    "steps": [
-                        {"range": [0, 50], "color": "lightgray"},
-                        {"range": [50, 90], "color": "gray"},
-                        {"range": [90, 100], "color": "red"},
-                    ],
-                    "threshold": {
-                        "line": {"color": "red", "width": 4},
-                        "thickness": 0.75,
-                        "value": 95,
-                    },
-                },
-            )
-        )
-        cpu.plotly_chart(fig)
+        cpu.plotly_chart(cpu_chart())
