@@ -29,7 +29,7 @@ data: Dict[str, MutableSequence[Optional[float]]] = defaultdict(deque)
 
 arr_size = 30
 
-
+global data
 data["time"] = deque([None] * arr_size)
 data["used_memory"] = deque([None] * arr_size)
 data["free_memory"] = deque([None] * arr_size)
@@ -38,7 +38,6 @@ data["cpu_usage"] = deque([None] * arr_size)
 
 
 def refresh_data():
-    global data
     # for part in partitions:
     #     mnt = part.mountpoint
     #     if "snap" in mnt or "boot" in mnt:
@@ -59,7 +58,6 @@ def refresh_data():
 
 
 def cpu_chart():
-    global data
     fig = go.Figure(
         go.Indicator(
             mode="gauge+number+delta",
@@ -85,18 +83,22 @@ def cpu_chart():
     return fig
 
 
+def memory_chart():
+    return (
+        px.line(
+            data,
+            x="time",
+            y=["used_memory", "free_memory", "total_memory"],
+            title=f"Memory usage on {hostname}",
+        ),
+    )
+
+
 if __name__ == "__main__":
     stats = st.empty()
     cpu = st.empty()
     while True:
         refresh_data()
         time.sleep(0.5)
-        stats.plotly_chart(
-            px.line(
-                data,
-                x="time",
-                y=["used_memory", "free_memory", "total_memory"],
-                title=f"Memory usage on {hostname}",
-            ),
-        )
+        stats.plotly_chart()
         cpu.plotly_chart(cpu_chart())
